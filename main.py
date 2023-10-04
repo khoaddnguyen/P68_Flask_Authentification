@@ -18,8 +18,8 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
- 
- 
+
+
 with app.app_context():
     db.create_all()
 
@@ -29,8 +29,25 @@ def home():
     return render_template("index.html")
 
 
-@app.route('/register')
+# Register a new user and add them your database
+# take the information they have inputted in register.html form
+# and create a new User object with email, name and password to save into the users.db
+# Once the user is registered, send them straight to the secrets.html
+@app.route('/register', methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+
+        new_user = User(
+            email=request.form.get("email"),
+            name=request.form.get("name"),
+            password=request.form.get("password")
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return render_template("secrets.html")
+
     return render_template("register.html")
 
 
